@@ -13,6 +13,14 @@ app.use('/images', express.static('public/images'));
 app.use('/videos', express.static('public/videos'));
 app.use('/documents', express.static('public/documents'));
 
+app.get('/', (req, res) => {
+    return res.json({
+        status: true,
+        message: 'OK',
+        error: null
+    })
+})
+
 const mediaRouter = require('./routes/media.routes.js');
 app.use('/api/v1', mediaRouter);
 
