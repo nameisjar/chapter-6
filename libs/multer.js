@@ -43,10 +43,6 @@ function generateFilter(props) {
 }
 
 module.exports = {
-    imageStorage: generateStorage({
-        location: 'public/images',
-        allowedMimeTypes: ['image/png', 'image/jpeg']
-    }),
     image: generateFilter({
         allowedMimeTypes: ['image/png', 'image/jpeg']
     })
