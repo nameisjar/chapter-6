@@ -24,7 +24,5 @@ app.get('/', (req, res) => {
 const mediaRouter = require('./routes/media.routes.js');
 app.use('/api/v1', mediaRouter);
 
-const authRouter = require('./routes/auth.routes');
-app.use('/api/v1/auth', authRouter);
 
 app.listen(PORT, () => console.log('Listening on port', PORT));

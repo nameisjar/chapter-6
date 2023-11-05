@@ -1,8 +1,8 @@
-const imagekit = require('../libs/imagekit');
-const path = require('path');
-const qr = require('qr-image');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const imagekit = require('../libs/imagekit');
+const path = require('path');
+
 
 module.exports = {
     singleUpload: (req, res) => {
@@ -34,11 +34,10 @@ module.exports = {
     },
 
 
-    imagekit: async (req, res, next) => {
-        try {
-            // contoh baca dari request multipart
-            let { first_name, last_name } = req.body;
 
+    createImage: async (req, res, next) => {
+        try {
+            let { judul, deskripsi } = req.body;
             let strFile = req.file.buffer.toString('base64');
 
             let { url } = await imagekit.upload({
@@ -46,112 +45,92 @@ module.exports = {
                 file: strFile
             });
 
-            return res.json({
-                status: true,
-                message: 'OK',
-                error: null,
-                data: { file_url: url, first_name, last_name }
-            });
-        } catch (err) {
-            next(err);
-        }
-    },
-    updateProfile: async (req, res, next) => {
-        try {
-            // Mendapatkan data dari permintaan multipart
-            let { first_name, last_name, birth_date, userId } = req.body;
-            let strFile = req.file.buffer.toString('base64');
-
-            // Mengunggah gambar ke ImageKit
-            let { url } = await imagekit.upload({
-                fileName: Date.now() + path.extname(req.file.originalname),
-                file: strFile
-            });
-
-            // Melakukan upsert pada profil pengguna
-            let userProfile = await prisma.userProfile.upsert({
-                where: {
-                    userId: Number(userId) // Gantilah dengan kolom yang sesuai pada profil pengguna yang menunjukkan ID pengguna
-                },
-                create: {
-                    first_name,
-                    last_name,
-                    birth_date,
-                    profile_picture: url,
-                    user: {
-                        connect: {
-                            id: Number(userId)
-                        }
-                    }
-                },
-                update: {
-                    first_name,
-                    last_name,
-                    birth_date,
-                    profile_picture: url
-                }
-            });
-
-            return res.json({
-                status: true,
-                message: 'OK',
-                error: null,
+            let createGambar = await prisma.image.create({
                 data: {
-                    file_url: url,
-                    first_name,
-                    last_name,
-                    birth_date
+                    judul: judul,
+                    deskripsi: deskripsi,
+                    url_gambar: url
                 }
+            });
+
+            return res.status(201).json({
+                status: true,
+                message: 'OK',
+                data: createGambar
             });
         } catch (err) {
             next(err);
         }
     },
 
-    generateQrCode: async (req, res, next) => {
+    getAllImage: async (req, res, next) => {
         try {
-            let { qr_data } = req.body;
-            if (!qr_data) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'Bad Request',
-                    error: 'qr_data is required!',
-                    data: null
-                });
-            }
-
-            let qrPng = qr.imageSync(qr_data, { type: 'png' });
-            let { url } = await imagekit.upload({
-                fileName: Date.now() + '.png',
-                file: qrPng.toString('base64')
-            });
-
-            return res.json({
+            const image = await prisma.image.findMany();
+            return res.status(200).json({
                 status: true,
                 message: 'OK',
                 error: null,
-                data: { qr_code_url: url }
+                data: image
             });
-        } catch (err) {
-            next(err);
+        } catch (error) {
+            next(error);
         }
     },
 
-
-    authenticate: async (req, res, next) => {
+    getDetailImage: async (req, res, next) => {
         try {
-            const user = req.user;
-            const profile = await prisma.userProfile.findUnique({
-                where: { userId: user.id }
+            const { id } = req.params;
+            const image = await prisma.image.findUnique({
+                where: { id: Number(id) }
             });
             return res.status(200).json({
                 status: true,
                 message: 'OK',
                 error: null,
-                data: { user: { ...profile, email: user.email } }
+                data: image
             });
         } catch (error) {
             next(error);
         }
-    }
+    },
+
+    deleteImage: async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const image = await prisma.image.delete({
+                where: { id: Number(id) }
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                error: null,
+                data: image
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    updateImage: async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const { judul, deskripsi } = req.body;
+            const image = await prisma.image.update({
+                where: { id: Number(id) },
+                data: {
+                    judul,
+                    deskripsi
+                }
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                error: null,
+                data: image
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
 };

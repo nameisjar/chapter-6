@@ -10,20 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          Int           @id @default(autoincrement())
-  email       String        @unique
-  password    String?
-  googleId    String?
-  UserProfile UserProfile?
-}
-
-model UserProfile {
-  id              Int    @id @default(autoincrement())
-  first_name      String
-  last_name       String
-  birth_date      String
-  profile_picture String
-  userId          Int @unique
-  user            User   @relation(fields: [userId], references: [id])
+model Image {
+  id         Int    @id @default(autoincrement())
+  judul      String
+  deskripsi  String
+  url_gambar String
 }
