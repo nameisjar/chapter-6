@@ -33,8 +33,6 @@ module.exports = {
         });
     },
 
-
-
     createImage: async (req, res, next) => {
         try {
             let { judul, deskripsi } = req.body;
