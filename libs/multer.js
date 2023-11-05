@@ -47,21 +47,7 @@ module.exports = {
         location: 'public/images',
         allowedMimeTypes: ['image/png', 'image/jpeg']
     }),
-    videoStorage: generateStorage({
-        location: 'public/videos',
-        allowedMimeTypes: ['video/x-msvideo', 'video/mp4', 'video/mpeg']
-    }),
-    documentStorage: generateStorage({
-        location: 'public/documents',
-        allowedMimeTypes: ['application/pdf']
-    }),
     image: generateFilter({
         allowedMimeTypes: ['image/png', 'image/jpeg']
-    }),
-    video: generateFilter({
-        allowedMimeTypes: ['video/x-msvideo', 'video/mp4', 'video/mpeg']
-    }),
-    document: generateFilter({
-        allowedMimeTypes: ['application/pdf']
     })
 };
