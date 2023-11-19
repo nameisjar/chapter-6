@@ -11,7 +11,6 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.set('view engine', 'ejs');
 
-
 Sentry.init({
     dsn: SENTRY_DSN,
     integrations: [
