@@ -37,6 +37,11 @@ app.get('/', (req, res) => {
     })
 })
 
+app.get('/', (req, res, next) => {
+    res.render('templates/activation-email', { name: 'Joko', url: 'https://google.com' });
+});
+
+
 const authRouter = require('./routes/auth.routes');
 app.use('/api/v1/auth', authRouter);
 

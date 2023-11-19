@@ -26,7 +26,17 @@ module.exports = {
             }
 
             req.user = await prisma.user.findUnique({ where: { id: decoded.id } });
+            if (!req.user.is_verified) {
+                return res.status(401).json({
+                    status: false,
+                    message: 'Unauthorized',
+                    err: 'You need to verify your email to continue',
+                    data: null
+                });
+            }
+
             next();
         });
+
     }
 };

@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('../utils/nodemailer');
 const { JWT_SECRET_KEY } = process.env;
 
 module.exports = {
@@ -35,6 +36,13 @@ module.exports = {
                     password: encryptedPassword
                 }
             });
+
+            // kirim email
+            let token = jwt.sign({ email: user.email }, JWT_SECRET_KEY);
+            let url = `http://localhost:3000/api/v1/auth/email-activation?token=${token}`;
+
+            const html = await nodemailer.getHtml('activation-email.ejs', { name, url });
+            nodemailer.sendEmail(email, 'Email Activation', html);
 
             return res.status(201).json({
                 status: true,
@@ -91,6 +99,28 @@ module.exports = {
             message: 'OK',
             err: null,
             data: { user: req.user }
+        });
+    },
+
+    activate: (req, res) => {
+        let { token } = req.query;
+
+        jwt.verify(token, JWT_SECRET_KEY, async (err, decoded) => {
+            if (err) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'Bad request',
+                    err: err.message,
+                    data: null
+                });
+            }
+
+            let updated = await prisma.user.update({
+                where: { email: decoded.email },
+                data: { is_verified: true }
+            });
+
+            res.json({ status: true, message: 'OK', err: null, data: updated });
         });
     }
 };
