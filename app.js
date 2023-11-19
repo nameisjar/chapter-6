@@ -24,6 +24,7 @@ Sentry.init({
     environment: RAILWAY_ENVIRONMENT_NAME
   });
 
+  
 app.get('/', (req, res) => {
     console.log(name);
     return res.json({
