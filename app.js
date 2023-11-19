@@ -10,9 +10,6 @@ const { PORT = 3000, SENTRY_DSN, RAILWAY_ENVIRONMENT_NAME } = process.env;
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use('/images', express.static('public/images'));
-app.use('/videos', express.static('public/videos'));
-app.use('/documents', express.static('public/documents'));
 
 
 Sentry.init({
@@ -40,8 +37,8 @@ app.get('/', (req, res) => {
     })
 })
 
-const mediaRouter = require('./routes/media.routes.js');
-app.use('/api/v1', mediaRouter);
+const authRouter = require('./routes/auth.routes');
+app.use('/api/v1/auth', authRouter);
 
 // The error handler must be registered before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
