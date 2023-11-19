@@ -9,7 +9,7 @@ const { PORT = 3000, SENTRY_DSN, RAILWAY_ENVIRONMENT_NAME } = process.env;
 // app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
-
+app.set('view engine', 'ejs');
 
 
 Sentry.init({
